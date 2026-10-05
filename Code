@@ -1,0 +1,76 @@
+
+# k-nn code
+
+library(caret)
+pt<-read.csv("C:/feature work/model.csv")
+
+
+set.seed(3033)
+intrain <- createDataPartition(y = dengue_df$V1, p= 0.7, list = FALSE)
+training <- dengue_df[intrain,]
+testing <- dengue_df[-intrain,]
+trctrl <- trainControl(method = "repeatedcv", number = 10, repeats = 3)
+set.seed(3333)
+knn_fit <- train(V1 ~., data = training, method = "knn",
+ trControl=trctrl,
+ preProcess = c("center", "scale"),
+ tuneLength = 10)
+R
+
+> test_pred <- predict(knn_fit, newdata = testing)
+> test_pred
+ 
+
+
+# naive bayes code
+library("caret")
+#head(iris)
+#x = iris[,-5]
+#y = iris$Species
+install.packages("klaR")
+pt<-read.csv("C:/Users/lopa/Desktop/New folder/model.csv")
+x1 <- subset(pt, select=-class)
+x1<-x1[-1]
+y1<-pt$class
+y1
+model = train(x1,y1,'nb',trControl=trainControl(method='cv',number=10))
+model
+predict(model$finalModel,x1)
+tab<-table(predict(model$finalModel,x1)$class,y1)
+1-sum(diag(tab))/sum(tab) #Misclassification Error
+n = sum(tab) # number of instances
+nc = nrow(tab) # number of classes
+diag = diag(tab) # number of correctly classified instances per class 
+rowsums = apply(tab, 1, sum) # number of instances per class
+colsums = apply(tab, 2, sum) # number of predictions per class
+p = rowsums / n # distribution of instances over the actual classes
+q = colsums / n # distribution of instances over the predicted classes
+accuracy = sum(diag) / n #Accuracy
+accuracy
+
+
+
+# svm code
+
+library(caret)
+h <- read.csv("C:/Users/lopa/Desktop/New folder/model.csv")                 
+#x1 <- subset(pt, select=-class)
+h<-h[-1]
+#y1<-pt$class
+set.seed(3033)
+intrain <- createDataPartition(y = h$class, p= 0.7, list = FALSE)
+training <- h[intrain,]
+testing <- h[-intrain,]
+dim(training)
+dim(testing)
+anyNA(h)
+svm_Linear <- train(class ~., data = training, method = "svmLinear",
+                    trControl=trctrl,
+                    preProcess = c("center", "scale"),
+                    tuneLength = 10)
+svm_Linear
+
+test_pred <- predict(svm_Linear, newdata = testing)
+test_pred
+
+confusionMatrix(test_pred, testing$class)
